@@ -9,7 +9,7 @@ workspace "BrainfuckVisualizer"
 outputdir = "/BIN/%{cfg.buildcfg}/%{cfg.architecture}/"
 -- get current working directory
 cwd = os.getcwd()
-RaylibDir = cwd .. "/Dependencies/raylib/src"
+RaylibDir = cwd .. "/Dependencies/raylib"
 
 targetdir(cwd .. outputdir .. "%{prj.name}/bin")
 objdir(cwd .. outputdir .. "%{prj.name}/bin-int")
@@ -43,5 +43,5 @@ flags {
 staticruntime "on"
 removeunreferencedcodedata "on"
 
-include "bfv"
+include "BrainfuckVisualizer"
 include "Dependencies/raylib"

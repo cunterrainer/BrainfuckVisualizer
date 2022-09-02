@@ -3,6 +3,8 @@ project "BrainfuckVisualizer"
     cppdialect "C++17"
     flags "FatalWarnings"
 
+    --defines "_CRT_SECURE_NO_WARNINGS"
+
     -- gcc* clang* msc*
     filter "toolset:msc*"
         warnings "High"
@@ -74,11 +76,13 @@ project "BrainfuckVisualizer"
     }
 
     includedirs {
-        RaylibDir
+        RaylibDir .. "/src",
+        RaylibDir .. "/include"
     }
 
     externalincludedirs {
-        RaylibDir
+        RaylibDir .. "/src",
+        RaylibDir .. "/include"
     }
 
     links {
