@@ -1,5 +1,8 @@
 #include "raylib.h"
 
+#define RAYGUI_IMPLEMENTATION
+#include "raygui.h"
+
 int main(void)
 {
     InitWindow(800, 450, "raylib [core] example - basic window");
