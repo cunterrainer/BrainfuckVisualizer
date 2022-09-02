@@ -3,12 +3,12 @@ project "BrainfuckVisualizer"
     cppdialect "C++17"
     flags "FatalWarnings"
 
-    --defines "_CRT_SECURE_NO_WARNINGS"
+    defines "_CRT_SECURE_NO_WARNINGS"
 
     -- gcc* clang* msc*
     filter "toolset:msc*"
-        warnings "High"
-        externalwarnings "Default" -- Default
+        warnings "Off" -- High
+        externalwarnings "Off" -- Default
         buildoptions { "/sdl" }
 
     filter { "toolset:gcc* or toolset:clang*" }
@@ -71,7 +71,7 @@ project "BrainfuckVisualizer"
     filter {}
 
     files {
-        "**.cpp",
+        "**.c",
         "**.h"
     }
 
