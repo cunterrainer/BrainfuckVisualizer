@@ -1,5 +1,7 @@
 #include <iostream>
 #include <fstream>
+#include <vector>
+#include <array>
 #include <cstdint>
 #include <cstdio>
 
@@ -109,10 +111,13 @@ public:
     explicit Interpreter(SourceCode& code) : m_sCode(code) {}
     ~Interpreter() { delete[] arr; }
 
-    bool Interpret()
+    char Interpret(size_t& currentIndex)
     {
+        currentIndex = m_IndexArr;
+        static size_t lastPos = m_IndexSrc;
+        static char lastPosChar = m_sCode[m_IndexSrc];
         if (m_IndexSrc == m_sCode.Size())
-            return true;
+            return lastPosChar;
 
         bool validChar = true;
         switch (m_sCode[m_IndexSrc])
@@ -141,14 +146,14 @@ public:
             if (arr[m_IndexArr] == 0)
             {
                 m_IndexSrc = AdvanceToEnd(m_IndexSrc);
-                if (m_IndexSrc == std::string::npos) return false;
+                if (m_IndexSrc == std::string::npos) return 0;
             }
             break;
         case ']':
             if (arr[m_IndexArr] != 0)
             {
                 m_IndexSrc = ResetToBegin(static_cast<int32_t>(m_IndexSrc));
-                if (m_IndexSrc == std::string::npos) return false;
+                if (m_IndexSrc == std::string::npos) return 0;
             }
             break;
         default:
@@ -158,9 +163,6 @@ public:
 
         if (validChar)
         {
-            static size_t lastPos = m_IndexSrc;
-            static char lastPosChar = m_sCode[m_IndexSrc];
-
             m_sCode.SetChar(lastPos, lastPosChar);
 
             lastPos = m_IndexSrc;
@@ -169,7 +171,7 @@ public:
         }
 
         ++m_IndexSrc;
-        return true;
+        return m_sCode[m_IndexSrc] == 0 ? lastPosChar : m_sCode[m_IndexSrc];
     }
 };
 
@@ -187,6 +189,23 @@ int main()
     if (sCode.Empty()) return 1;
     Interpreter itp(sCode);
 
+    sf::RectangleShape middleView(sf::Vector2f(300.f, 300.f));
+    middleView.setPosition((window.getSize().x - middleView.getSize().x) / 2.f, (window.getSize().y - middleView.getSize().y) / 2.f);
+    middleView.setOutlineThickness(5.f);
+    middleView.setFillColor(sf::Color::Transparent);
+    middleView.setOutlineColor(sf::Color::White);
+
+    sf::Text viewText(sCode[0], font, 300);
+    viewText.setPosition(middleView.getPosition());
+
+    size_t arrIndex = 0;
+    const std::string arrayIndex = "Array index: ";
+    sf::Text arrayText(arrayIndex, font);
+    sf::Vector2f middleViewPos = middleView.getPosition();
+    const sf::FloatRect arrayTextBounds = arrayText.getLocalBounds();
+    const float middleViewThickness = middleView.getOutlineThickness();
+    arrayText.setPosition(middleViewPos.x - middleViewThickness, middleViewPos.y - arrayTextBounds.height - middleViewThickness - 10);
+
     while (window.isOpen())
     {
         sf::Event event;
@@ -194,13 +213,36 @@ int main()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
+            else if (event.type == sf::Event::Resized)
+            {
+                // update the view to the new size of the window
+                sf::FloatRect visibleArea(0, 0, static_cast<float>(event.size.width), static_cast<float>(event.size.height));
+                window.setView(sf::View(visibleArea));
+                middleView.setPosition((window.getSize().x - middleView.getSize().x) / 2.f, (window.getSize().y - middleView.getSize().y) / 2.f);
+                middleViewPos = middleView.getPosition();
+                arrayText.setPosition(middleViewPos.x - middleViewThickness, middleViewPos.y - arrayTextBounds.height - middleViewThickness - 10);
+            }
         }
 
-        if (!itp.Interpret())
+        char c;
+        if ((c = itp.Interpret(arrIndex)) == 0)
             return 1;
+        if (c != '\n')
+        {
+            viewText.setString(c);
+            // center text
+            sf::FloatRect textRect = viewText.getLocalBounds();
+            viewText.setOrigin(textRect.left + textRect.width / 2.0f, textRect.top + textRect.height / 2.0f);
+            viewText.setPosition(sf::Vector2f(window.getSize().x / 2.0f, window.getSize().y / 2.0f));
+        }
+
+        arrayText.setString(arrayIndex + std::to_string(arrIndex));
 
         window.clear();
         sCode.Draw();
+        window.draw(middleView);
+        window.draw(viewText);
+        window.draw(arrayText);
         window.display();
     }
     return 0;
