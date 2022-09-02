@@ -3,13 +3,10 @@ project "BrainfuckVisualizer"
     cppdialect "C++17"
     flags "FatalWarnings"
 
-    defines "SFML_STATIC"
-
     -- gcc* clang* msc*
     filter "toolset:msc*"
         warnings "High"
         externalwarnings "Default" -- Default
-        disablewarnings {}
         buildoptions { "/sdl" }
 
     filter { "toolset:gcc* or toolset:clang*" }
@@ -28,7 +25,7 @@ project "BrainfuckVisualizer"
             "shadow",
             "sign-conversion",
             "sign-promo",
-            --"strict-overflow=5",
+            "strict-overflow=5",
             "switch-default",
             "undef",
             "uninitialized",
@@ -38,7 +35,7 @@ project "BrainfuckVisualizer"
             "conversion",
             "deprecated",
             "format-security",
-            --"null-dereference",
+            "null-dereference",
             "stack-protector",
             "vla",
             "shift-overflow"
@@ -77,44 +74,23 @@ project "BrainfuckVisualizer"
     }
 
     includedirs {
-        SfmlDir .. "/include"
+        RaylibDir
     }
 
     externalincludedirs {
-        SfmlDir .. "/include"
+        RaylibDir
     }
 
     links {
-        "winmm",
-        "flac",
-        "freetype",
-        "ogg",
-        "openal32",
-        "opengl32",
-        "vorbis",
-        "vorbisenc",
-        "vorbisfile",
-        "gdi32",
-        "SFML",
-        "user32",
-        "advapi32"
+        "raylib",
+        "Winmm"
     }
-
-    filter { "platforms:x64" }
-        libdirs {
-            SfmlDir .. "/extlibs/libs-msvc-universal/x64"
-        }
-
-    filter { "platforms:x86" }
-        libdirs {
-            SfmlDir .. "/extlibs/libs-msvc-universal/x86"
-        }
 
     filter { "configurations:Debug" }
         kind "ConsoleApp"
         floatingpoint "default"
 
     filter { "configurations:Release" }
-        kind "ConsoleApp"
-        --kind "WindowedApp"
+        kind "WindowedApp"
+        entrypoint "mainCRTStartup"
         floatingpoint "fast"

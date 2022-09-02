@@ -9,7 +9,7 @@ workspace "BrainfuckVisualizer"
 outputdir = "/BIN/%{cfg.buildcfg}/%{cfg.architecture}/"
 -- get current working directory
 cwd = os.getcwd()
-SfmlDir = cwd .. "/Dependencies/SFML"
+RaylibDir = cwd .. "/Dependencies/raylib/src"
 
 targetdir(cwd .. outputdir .. "%{prj.name}/bin")
 objdir(cwd .. outputdir .. "%{prj.name}/bin-int")
@@ -43,5 +43,5 @@ flags {
 staticruntime "on"
 removeunreferencedcodedata "on"
 
-include "BrainfuckVisualizer"
-include "Dependencies/SFML"
+include "bfv"
+include "Dependencies/raylib"
