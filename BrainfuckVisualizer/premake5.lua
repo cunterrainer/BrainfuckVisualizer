@@ -71,7 +71,7 @@ project "BrainfuckVisualizer"
     filter {}
 
     files {
-        "**.c",
+        "**.cpp",
         "**.h"
     }
 
